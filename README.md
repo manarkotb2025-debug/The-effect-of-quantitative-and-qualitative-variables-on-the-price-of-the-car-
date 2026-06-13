@@ -1,94 +1,123 @@
-import pandas as pd
-import numpy as np
-import os
+The Effect of Quantitative and Qualitative Variables on the Price of the Car
+1. Project Overview
+The automotive market is influenced by a complex interplay of quantitative metrics (e.g., horsepower, engine size) and qualitative features (e.g., brand prestige, fuel type).
 
-# 1. قراءة ملف البيانات الحقيقي الخاص بالمشروع
-# تأكدي أن اسم الملف مطابق لملف الـ CSV الموجود في البروجكت
-data_file = "CarPrice_Assignment.csv" 
+This project analyzes a comprehensive car dataset (CarPrice_Assignment.csv) to understand how these different variables impact vehicle pricing. It builds a complete data analytics pipeline using R and an interactive Power BI dashboard to visualize these insights.
 
-if not os.path.exists(data_file):
-    print(f"⚠️ تنبيه: يرجى وضع ملف البيانات '{data_file}' في نفس الفولدر مع هذا السكريبت.")
-    # إنشاء داتا تجريبية بنفس الأعمدة الحقيقية للمشروع فقط لحمايتك من التوقف إذا لم يتوفر الملف فوراً
-    demo_cols = ['car_ID', 'symboling', 'CarName', 'fueltype', 'aspiration', 'doornumber', 
-                 'carbody', 'drivewheel', 'enginelocation', 'wheelbase', 'carlength', 
-                 'carwidth', 'carheight', 'curbweight', 'enginetype', 'cylindernumber', 
-                 'enginesize', 'fuelsystem', 'boreratio', 'stroke', 'compressionratio', 
-                 'horsepower', 'peakrpm', 'citympg', 'highwaympg', 'price']
-    df = pd.DataFrame(columns=demo_cols)
-    # تعبئة سطر واحد وهمي لتجنب أخطاء التشغيل الأولي
-    df.loc[0] = [1, 3, 'alfa-romero giulia', 'gas', 'std', 'two', 'convertible', 'rwd', 'front', 
-                 88.6, 168.8, 64.1, 48.8, 2548, 'dohc', 'four', 130, 'mpfi', 3.47, 2.68, 9.0, 111, 5000, 21, 27, 13495.0]
-else:
-    df = pd.read_csv(data_file)
-    print("✅ تم تحميل ملف بيانات السيارات الحقيقي بنجاح.")
+Tools Used:
 
-# إنشاء فولدر لحفظ الجداول المستخرجة للـ Power BI
-os.makedirs('powerbi_tables', exist_ok=True)
+R (tidyverse, dplyr) – Data cleaning, brand text correction, and feature engineering.
 
-# -------------------------------------------------------------
-# 2. تنظيف البيانات وفصل اسم الماركة (Car Brand) عن اسم الموديل
-# -------------------------------------------------------------
-if 'CarName' in df.columns:
-    # استخراج الكلمة الأولى وهي الماركة (مثل: toyota, audi)
-    df['Car_Brand'] = df['CarName'].apply(lambda x: str(x).split(' ')[0].lower())
-    
-    # تصحيح الأخطاء الإملائية الشائعة في هذا السيت الحقيقي للبيانات
-    brand_corrections = {
-        'maxda': 'mazda',
-        'porcshz': 'porsche',
-        'vokswagen': 'volkswagen',
-        'vw': 'volkswagen',
-        'toyouta': 'toyota'
-    }
-    df['Car_Brand'] = df['Car_Brand'].replace(brand_corrections)
-else:
-    df['Car_Brand'] = 'unknown'
+Excel – Initial data exploration and data dictionary verification.
 
-print("✅ تم تنظيف أسماء ماركات السيارات وتصحيح الأخطاء الإملائية.")
+Power BI – Data modeling (Star/Galaxy Schema), DAX calculations, and interactive dashboarding.
 
-# -------------------------------------------------------------
-# 3. بناء جداum الأبعاد (Dimension Tables) - المتغيرات النوعية
-# -------------------------------------------------------------
+2. Project Objective
+The primary objective is to build an interactive pricing intelligence system that enables auto manufacturers, dealerships, and analysts to:
 
-# أ) جدول مواصفات هيكل وماركة السيارة (DIM_CAR_CATALOG)
-dim_car_catalog = df[['Car_Brand', 'carbody', 'drivewheel', 'enginelocation']].drop_duplicates().reset_index(drop=True)
-dim_car_catalog['Catalog_ID'] = dim_car_catalog.index + 1
+Evaluate how quantitative variables (mileage, engine specs) correlate with car prices.
 
-# ب) جدول نظام المحرك والوقود (DIM_ENGINE_SPECS)
-dim_engine_specs = df[['fueltype', 'aspiration', 'enginetype', 'cylindernumber', 'fuelsystem']].drop_duplicates().reset_index(drop=True)
-dim_engine_specs['Engine_SpecID'] = dim_engine_specs.index + 1
+Measure the impact of qualitative variables (body style, fuel type, brand) on market value.
 
-# ربط المعرفات (IDs) بالجدول الرئيسي قبل الفصل
-df = df.merge(dim_car_catalog, on=['Car_Brand', 'carbody', 'drivewheel', 'enginelocation'])
-df = df.merge(dim_engine_specs, on=['fueltype', 'aspiration', 'enginetype', 'cylindernumber', 'fuelsystem'])
+Segment the market into luxury vs. budget categories based on statistical features.
 
-print("✅ تم تجهيز جداول الأبعاد النوعية (Dimensions).")
+Provide an interactive tool for stakeholders to predict pricing trends based on vehicle specifications.
 
-# -------------------------------------------------------------
-# 4. بناء جداول الحقائق (Fact Tables) - المتغيرات الكمية والأرقام
-# -------------------------------------------------------------
+3. Key Stakeholders
+The system is designed for:
 
-# أ) جدول حقائق الأسعار والأبعاد الفنية (FACT_CAR_PRICING)
-fact_car_pricing = df[[
-    'car_ID', 'Catalog_ID', 'Engine_SpecID', 'symboling', 'doornumber',
-    'wheelbase', 'carlength', 'carwidth', 'carheight', 'curbweight', 'price'
-]]
+Car Dealership Managers – To optimize pricing strategies for inventory.
 
-# ب) جدول حقائق الأداء الميكانيكي واستهلاك الوقود (FACT_ENGINE_PERFORMANCE)
-fact_engine_performance = df[[
-    'car_ID', 'enginesize', 'boreratio', 'stroke', 'compressionratio',
-    'horsepower', 'peakrpm', 'citympg', 'highwaympg'
-]]
+Automotive Market Analysts – To track consumer trends and feature valuations.
 
-print("✅ تم تجهيز جداول الحقائق الكمية (Facts).")
+Product Managers (Auto Industry) – To understand which specifications justify premium pricing.
 
-# -------------------------------------------------------------
-# 5. تصدير الجداول النهائية إلى ملفات CSV نظيفة تماماً للـ Power BI
-# -------------------------------------------------------------
-dim_car_catalog.to_csv('powerbi_tables/dim_car_catalog.csv', index=False)
-dim_engine_specs.to_csv('powerbi_tables/dim_engine_specs.csv', index=False)
-fact_car_pricing.to_csv('powerbi_tables/fact_car_pricing.csv', index=False)
-fact_engine_performance.to_csv('powerbi_tables/fact_engine_performance.csv', index=False)
+4. Key Performance Indicators (KPIs)
+The dashboard calculates and tracks:
 
-print("\n🚀 كودك جاهز بالملي ومطابق للبروجكت!")
-print("تجدين الجداول الـ 4 داخل فولدر 'powerbi_tables' جاهزة للربط الفوري في Power BI وتحليل تأثير المتغيرات على السعر.")
+Average Vehicle Price
+
+Total Car Models Analyzed
+
+Price Premium by Brand (Prestige Factor)
+
+Horsepower-to-Price Efficiency
+
+Depreciation Impact (Mileage vs. Price Rate)
+
+Fuel Efficiency Metrics (City vs. Highway MPG correlations)
+
+5. System Architecture
+The project follows a multi-layer analytics pipeline:
+
+flowchart LR
+    A[Raw Car Dataset] --> B[R Scripts Exploration]
+    B --> C[R Data Cleaning & Typo Fixes]
+    C --> D[Processed Star-Schema Datasets]
+    D --> E[Power BI Data Model]
+    E --> F[DAX Pricing Measures]
+    F --> G[Interactive Dashboard]
+    G --> H[Pricing Insights]
+
+Architecture Layers1. Data Source LayerRaw dataset containing technical specs, categorical features, and historical market prices of vehicles.2. Data Processing LayerR Scripts used to fix spelling mistakes in car brands (e.g., correcting maxda to mazda, vokswagen to volkswagen) and split categorical specifications from numerical indicators.3. Analytics LayerStar/Galaxy schema modeling within Power BI, defining relationships between facts and dimensional categories.4. Visualization LayerDynamic dashboards displaying price distribution, scatter plots for numerical correlations, and bar charts for categorical feature weights.6. System Analysis6.1 Input Data StructureAttributeDescriptionTypecar_IDUnique identifier for each vehicle recordQuantitativeCarNameFull name of the car (Brand + Model)QualitativefueltypeFuel used (Gas vs. Diesel)QualitativecarbodyBody style (Sedan, SUV, Hatchback, Convertible)QualitativedrivewheelDrive type (FWD, RWD, 4WD)Qualitativewheelbase / carlengthPhysical dimensions of the carQuantitativeenginesizeEngine displacement capacityQuantitativehorsepowerTotal engine power outputQuantitativecitympg / highwaympgFuel economy metricsQuantitativepriceTarget variable: Final market price of the carQuantitative6.2 System ProcessingThe pipeline automates:Extracting the core Car Brand from the raw CarName string using R.Handling typo fixes for global brands to avoid duplicate categories in R.Normalizing numerical variables to evaluate their direct correlation coefficients against price.Dividing data into explicit dimension tables (DIM_CAR_CATALOG, DIM_ENGINE_SPECS) and fact tables (FACT_CAR_PRICING).6.3 System Outputs (Dashboard Layout)The final Power BI dashboard delivers:Executive Pricing Overview: High-level cards for Average Price, Max Price, and Brand Counts.Technical Performance Analysis: Scatter plots showing how horsepower and enginesize affect price.Categorical Feature Impact: Visual breakdown of price variations across carbody styles and fueltype.Efficiency vs Luxury Matrix: Cross-analyzing fuel economy (MPG) against total vehicle cost.6.4 Data Model (Galaxy Schema)Code snippeterDiagram
+
+FACT_CAR_PRICING {
+    int car_ID
+    int Catalog_ID
+    int Engine_SpecID
+    int symboling
+    float price
+    int curbweight
+}
+
+FACT_ENGINE_PERFORMANCE {
+    int car_ID
+    int enginesize
+    int horsepower
+    int peakrpm
+    float citympg
+}
+
+DIM_CAR_CATALOG {
+    int Catalog_ID
+    string Car_Brand
+    string carbody
+    string drivewheel
+}
+
+DIM_ENGINE_SPECS {
+    int Engine_SpecID
+    string fueltype
+    string enginetype
+    string cylindernumber
+}
+
+DIM_CAR_CATALOG ||--o{ FACT_CAR_PRICING : categorizes
+DIM_ENGINE_SPECS ||--o{ FACT_CAR_PRICING : configures
+FACT_CAR_PRICING ||--|| FACT_ENGINE_PERFORMANCE : analyzes
+7. Key DAX MeasuresAverage Car PriceCode snippetAverage Price = AVERAGE(FACT_CAR_PRICING[price])
+Total Models TestedCode snippetTotal Vehicles = COUNT(FACT_CAR_PRICING[car_ID])
+High-End Premium ThresholdCode snippetPremium Vehicle Count = 
+CALCULATE(
+    COUNT(FACT_CAR_PRICING[car_ID]), 
+    FACT_CAR_PRICING[price] > 20000
+)
+Horsepower to Price RatioCode snippetPrice Per HP = DIVIDE(SUM(FACT_CAR_PRICING[price]), SUM(FACT_ENGINE_PERFORMANCE[horsepower]), 0)
+8. Repository Structurecar-price-variables-analysis
+
+├── data
+│   ├── CarPrice_Assignment.csv
+│   └── powerbi_tables/
+│       ├── dim_car_catalog.csv
+│       ├── dim_engine_specs.csv
+│       ├── fact_car_pricing.csv
+│       └── fact_engine_performance.csv
+│
+├── R
+│   └── data_cleaning.R
+│
+├── powerbi
+│   └── car_price_analytics.pbix
+│
+└── README.md
+9. Expected InsightsThe dashboard effectively answers the following strategic questions:Engine Size & Power: Engine size and horsepower show the strongest positive correlation with a car's price.Brand Premium: Brands like BMW, Porsche, and Jaguar retain a structural price premium regardless of minor changes in standard features.Body Style Trends: Hardtop and convertibles average higher baseline prices compared to standard sedans and hatchbacks.Fuel Efficiency vs Price: Highly fuel-efficient vehicles (high MPG) generally occupy the budget segment, while low-efficiency vehicles dominate the performance and luxury high-priced sectors.
