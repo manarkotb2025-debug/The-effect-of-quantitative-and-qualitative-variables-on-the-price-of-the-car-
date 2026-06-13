@@ -1,62 +1,155 @@
-# The Effect of Quantitative and Qualitative Variables on the Price of the Car
+# The Effect of Quantitative and Qualitative Variables on Car Prices
 
 ---
 
-## 1. **Project Overview**
+## 1. Project Overview
 
-The automotive market is influenced by a complex interplay of quantitative metrics (e.g., horsepower, engine size) and qualitative features (e.g., brand prestige, fuel type).  
+This project analyzes the relationship between car prices and a set of quantitative and qualitative variables. The goal is to understand how different features of a car influence its final market price using statistical analysis and regression techniques.
 
-This project analyzes a comprehensive car dataset (`CarPrice_Assignment.csv`) to understand how these different variables impact vehicle pricing. It builds a complete **data analytics pipeline** and an interactive **Power BI dashboard** to visualize these insights.  
-
-**Tools Used:**
-
-* **R (tidyverse, dplyr)** – Data cleaning, brand text correction, and feature engineering  
-* **Excel** – Initial exploration and validation  
-* **Power BI** – Data modeling, DAX calculations, interactive dashboards  
+The study focuses on identifying patterns between car attributes and price variations without assuming complex machine learning pipelines, but rather relying on structured statistical interpretation.
 
 ---
 
-## 2. **Project Objective**
+## 2. Project Objective
 
-The main goal is to build a **data-driven pricing intelligence system** for car market analysis that enables stakeholders to:
+The main objective of this project is to:
 
-* Monitor **car price distributions and market trends** * Track the impact of **quantitative variables** (horsepower, engine size, mileage) on price  
-* Evaluate **qualitative features** (body style, fuel type, drive wheel) on vehicle valuation  
-* Analyze **brand premium factors** across different manufacturers  
-* Enable **interactive exploration** of automotive specifications  
-
----
-
-## 3. **Key Stakeholders**
-
-The system is designed for:
-
-* **Car Dealership Managers** – Optimize pricing strategies and inventory management  
-* **Automotive Market Analysts** – Track consumer trends and vehicle feature valuations  
-* **Product Managers (Auto Industry)** – Understand which technical specifications justify premium pricing  
-* **Business Analysts** – Generate insights and competitive reports  
+* Investigate the relationship between car price and different explanatory variables
+* Analyze both numerical (quantitative) and categorical (qualitative) factors
+* Identify which variables have the strongest influence on price
+* Build a statistical model to describe price behavior
+* Interpret results in a meaningful way for decision-making
 
 ---
 
-## 4. **Key Performance Indicators (KPIs)**
+## 3. Key Stakeholders
 
-The dashboard calculates and tracks:
+This analysis can be useful for:
 
-* **Average Vehicle Price** * **Total Car Models Analyzed** * **Price Premium by Brand** (Prestige Factor)  
-* **Horsepower-to-Price Efficiency** * **Depreciation & Mileage Impact** * **Fuel Efficiency Metrics** (City vs Highway MPG)  
+* Automotive analysts
+* Car dealerships
+* Market researchers
+* Data analysis learners
+* Business decision makers in automotive pricing
 
 ---
 
-## 5. **System Architecture**
+## 4. Key Variables
 
-The project follows a **multi-layer analytics pipeline**:
+The dataset includes:
+
+### Quantitative Variables:
+
+* Mileage
+* Engine size
+* Horsepower
+* Number of cylinders (if numerical in dataset)
+
+### Qualitative Variables:
+
+* Fuel type
+* Car brand / model
+* Body type
+* Transmission type (if included)
+
+---
+
+## 5. System Workflow
 
 ```mermaid
 flowchart LR
-    A[Raw Car Dataset] --> B[R Scripts Exploration]
-    B --> C[R Data Cleaning & Typo Fixes]
-    C --> D[Processed Star-Schema Datasets]
-    D --> E[Power BI Data Model]
-    E --> F[DAX Pricing Measures]
-    F --> G[Interactive Dashboard]
-    G --> H[Pricing Insights]
+A[Raw Car Dataset] --> B[Data Exploration]
+B --> C[Data Cleaning]
+C --> D[Variable Classification]
+D --> E[Statistical Analysis]
+E --> F[Regression Modeling]
+F --> G[Interpretation of Results]
+```
+
+---
+
+## 6. System Analysis
+
+### 6.1 Input Data
+
+The dataset consists of car-related attributes including both numerical and categorical variables along with the target variable (price).
+
+---
+
+### 6.2 Data Processing Steps
+
+The analysis includes:
+
+* Understanding variable types (quantitative vs qualitative)
+* Handling missing or inconsistent data
+* Exploring relationships between variables
+* Converting categorical variables for analysis when needed
+* Performing regression analysis
+
+---
+
+### 6.3 Output Results
+
+The project produces:
+
+* Statistical summaries of variables
+* Relationship analysis between features and price
+* Regression model interpretation
+* Insights about which variables influence price most
+
+---
+
+## 7. Statistical Analysis
+
+### 7.1 Correlation and Relationship Analysis
+
+The project examines how strongly each quantitative variable is related to price, and how categorical variables affect price differences between groups.
+
+---
+
+### 7.2 Regression Analysis Concept
+
+A multiple regression approach is used conceptually to estimate car price as a function of multiple variables:
+
+* Quantitative variables are included directly
+* Qualitative variables are converted into indicator (dummy) variables
+
+The model helps estimate how each feature contributes to price changes.
+
+---
+
+## 8. Key Insights
+
+The analysis helps answer:
+
+* Which car features increase price
+* How mileage affects resale value
+* Whether brand or fuel type significantly impacts pricing
+* How engine specifications influence market value
+
+---
+
+## 9. Repository Structure
+
+```
+The-effect-of-quantitative-and-qualitative-variables-on-the-price-of-the-car
+
+data/
+   dataset file(s)
+
+notebooks/
+   analysis notebook (if applicable)
+
+reports/
+   project report or documentation
+
+README.md
+```
+
+---
+
+## 10. Conclusion
+
+This project provides a clear statistical understanding of how car characteristics affect pricing. It highlights the importance of both numerical and categorical variables in determining car value and demonstrates how regression analysis can be used to interpret real-world datasets.
+
+---
