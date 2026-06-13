@@ -36,6 +36,19 @@ flowchart LR
     E --> F[Exploratory Data Analysis - EDA]
     F --> G[Statistical Validation & Correlation]
     G --> H[Final Insights & Reporting]
+The-effect-of-quantitative-and-qualitative-variables-on-the-price-of-the-car-
+│
+├── data/
+│   ├── raw_car_data.csv          # Original dataset before processing
+│   └── processed_car_data.csv    # Sanitized and structured dataset
+│
+├── notebooks/
+│   └── price_analysis_eda.ipynb  # Step-by-step EDA and statistical testing
+│
+├── scripts/
+│   └── data_preprocessing.py     # Python script for cleaning and feature engineering
+│
+└── README.md                     # Project documentation
 git clone [https://github.com/manarkotb2025-debug/The-effect-of-quantitative-and-qualitative-variables-on-the-price-of-the-car-.git](https://github.com/manarkotb2025-debug/The-effect-of-quantitative-and-qualitative-variables-on-the-price-of-the-car-.git)
-   cd The-effect-of-quantitative-and-qualitative-variables-on-the-price-of-the-car-
+cd The-effect-of-quantitative-and-qualitative-variables-on-the-price-of-the-car-
 pip install pandas numpy matplotlib seaborn scipy
