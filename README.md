@@ -1,54 +1,62 @@
-# 1. تحميل المكتبات وقراءة ملف البيانات الحقيقي
-library(tidyverse)
+# The Effect of Quantitative and Qualitative Variables on the Price of the Car
 
-data_file <- "CarPrice_Assignment.csv"
+---
 
-if (!file.exists(data_file)) {
-  stop("⚠️ تنبيه: يرجى وضع ملف البيانات 'CarPrice_Assignment.csv' في نفس الفولدر!")
-}
+## 1. **Project Overview**
 
-df <- read_csv(data_file)
+The automotive market is influenced by a complex interplay of quantitative metrics (e.g., horsepower, engine size) and qualitative features (e.g., brand prestige, fuel type).  
 
-# إنشاء الفولدر لحفظ جداول الـ Power BI
-dir.create("powerbi_tables", showWarnings = FALSE)
+This project analyzes a comprehensive car dataset (`CarPrice_Assignment.csv`) to understand how these different variables impact vehicle pricing. It builds a complete **data analytics pipeline** and an interactive **Power BI dashboard** to visualize these insights.  
 
-# 2. تنظيف أسماء الماركات وتصحيح الأخطاء الإملائية
-df <- df %>%
-  mutate(Car_Brand = str_to_lower(str_split_fixed(CarName, " ", 2)[,1])) %>%
-  mutate(Car_Brand = recode(Car_Brand, 
-                            "maxda" = "mazda",
-                            "porcshz" = "porsche",
-                            "vokswagen" = "volkswagen",
-                            "vw" = "volkswagen",
-                            "toyouta" = "toyota"))
+**Tools Used:**
 
-# 3. بناء جداول الأبعاد (Dimension Tables)
-dim_car_catalog <- df %>%
-  select(Car_Brand, carbody, drivewheel, enginelocation) %>%
-  distinct() %>%
-  mutate(Catalog_ID = row_number())
+* **R (tidyverse, dplyr)** – Data cleaning, brand text correction, and feature engineering  
+* **Excel** – Initial exploration and validation  
+* **Power BI** – Data modeling, DAX calculations, interactive dashboards  
 
-dim_engine_specs <- df %>%
-  select(fueltype, aspiration, enginetype, cylindernumber, fuelsystem) %>%
-  distinct() %>%
-  mutate(Engine_SpecID = row_number())
+---
 
-# ربط المعرفات بالجدول الرئيسي
-df <- df %>%
-  inner_join(dim_car_catalog, by = c("Car_Brand", "carbody", "drivewheel", "enginelocation")) %>%
-  inner_join(dim_engine_specs, by = c("fueltype", "aspiration", "enginetype", "cylindernumber", "fuelsystem"))
+## 2. **Project Objective**
 
-# 4. بناء جداول الحقائق (Fact Tables)
-fact_car_pricing <- df %>%
-  select(car_ID, Catalog_ID, Engine_SpecID, symboling, doornumber, wheelbase, carlength, carwidth, carheight, curbweight, price)
+The main goal is to build a **data-driven pricing intelligence system** for car market analysis that enables stakeholders to:
 
-fact_engine_performance <- df %>%
-  select(car_ID, enginesize, boreratio, stroke, compressionratio, horsepower, peakrpm, citympg, highwaympg)
+* Monitor **car price distributions and market trends** * Track the impact of **quantitative variables** (horsepower, engine size, mileage) on price  
+* Evaluate **qualitative features** (body style, fuel type, drive wheel) on vehicle valuation  
+* Analyze **brand premium factors** across different manufacturers  
+* Enable **interactive exploration** of automotive specifications  
 
-# 5. تصدير الجداول النهائية إلى ملفات CSV للـ Power BI
-write_csv(dim_car_catalog, "powerbi_tables/dim_car_catalog.csv")
-write_csv(dim_engine_specs, "powerbi_tables/dim_engine_specs.csv")
-write_csv(fact_car_pricing, "powerbi_tables/fact_car_pricing.csv")
-write_csv(fact_engine_performance, "powerbi_tables/fact_engine_performance.csv")
+---
 
-print("🚀 تم استخراج الجداول الـ 4 بنجاح داخل فولدر 'powerbi_tables' جاهزة للـ Power BI!")
+## 3. **Key Stakeholders**
+
+The system is designed for:
+
+* **Car Dealership Managers** – Optimize pricing strategies and inventory management  
+* **Automotive Market Analysts** – Track consumer trends and vehicle feature valuations  
+* **Product Managers (Auto Industry)** – Understand which technical specifications justify premium pricing  
+* **Business Analysts** – Generate insights and competitive reports  
+
+---
+
+## 4. **Key Performance Indicators (KPIs)**
+
+The dashboard calculates and tracks:
+
+* **Average Vehicle Price** * **Total Car Models Analyzed** * **Price Premium by Brand** (Prestige Factor)  
+* **Horsepower-to-Price Efficiency** * **Depreciation & Mileage Impact** * **Fuel Efficiency Metrics** (City vs Highway MPG)  
+
+---
+
+## 5. **System Architecture**
+
+The project follows a **multi-layer analytics pipeline**:
+
+```mermaid
+flowchart LR
+    A[Raw Car Dataset] --> B[R Scripts Exploration]
+    B --> C[R Data Cleaning & Typo Fixes]
+    C --> D[Processed Star-Schema Datasets]
+    D --> E[Power BI Data Model]
+    E --> F[DAX Pricing Measures]
+    F --> G[Interactive Dashboard]
+    G --> H[Pricing Insights]
